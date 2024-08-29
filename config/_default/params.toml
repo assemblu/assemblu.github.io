@@ -149,5 +149,3 @@ clientSecret = ""
 host = ""
 id = ""
 
-[params]
-disableHugoCredit = true

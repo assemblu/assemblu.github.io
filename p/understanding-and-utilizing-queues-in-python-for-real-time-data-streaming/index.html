@@ -1,18 +1,18 @@
 <!DOCTYPE html>
 <html lang="en-us" dir="ltr">
     <head><meta charset='utf-8'>
-<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="title: &ldquo;Using Queues in Python for Real-Time Data Streaming&rdquo; date: 2024-08-28 draft: false tags: [&ldquo;Python&rdquo;, &ldquo;Queues&rdquo;, &ldquo;Real-Time Data&rdquo;, &ldquo;WebSockets&rdquo;, &ldquo;FastAPI&rdquo;, &ldquo;Algo Trading&rdquo;] In the world of algorithmic trading and real-time data processing, handling a continuous stream of data efficiently is crucial. Python&rsquo;s queue module provides a simple yet powerful way to manage data flow between different threads, ensuring that your application remains responsive and performs well. In this post, we&rsquo;ll explore how to use queue.">
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="In the world of algorithmic trading and real-time data processing, handling a continuous stream of data efficiently is crucial. Python&rsquo;s queue module provides a simple yet powerful way to manage data flow between different threads, ensuring that your application remains responsive and performs well. In this post, we&rsquo;ll explore how to use queue.Queue in Python to manage real-time data streaming, particularly in the context of an algorithmic trading engine using FastAPI.">
 <title>Understanding and Utilizing Queues in Python for Real-Time Data Streaming</title>
 
 <link rel='canonical' href='https://assemb.lu/p/understanding-and-utilizing-queues-in-python-for-real-time-data-streaming/'>
 
 <link rel="stylesheet" href="/scss/style.min.0304c6baf04e01a8fe70693791cb744d56a3578a3120a8796cefc66825aa39c7.css"><meta property='og:title' content="Understanding and Utilizing Queues in Python for Real-Time Data Streaming">
-<meta property='og:description' content="title: &ldquo;Using Queues in Python for Real-Time Data Streaming&rdquo; date: 2024-08-28 draft: false tags: [&ldquo;Python&rdquo;, &ldquo;Queues&rdquo;, &ldquo;Real-Time Data&rdquo;, &ldquo;WebSockets&rdquo;, &ldquo;FastAPI&rdquo;, &ldquo;Algo Trading&rdquo;] In the world of algorithmic trading and real-time data processing, handling a continuous stream of data efficiently is crucial. Python&rsquo;s queue module provides a simple yet powerful way to manage data flow between different threads, ensuring that your application remains responsive and performs well. In this post, we&rsquo;ll explore how to use queue.">
+<meta property='og:description' content="In the world of algorithmic trading and real-time data processing, handling a continuous stream of data efficiently is crucial. Python&rsquo;s queue module provides a simple yet powerful way to manage data flow between different threads, ensuring that your application remains responsive and performs well. In this post, we&rsquo;ll explore how to use queue.Queue in Python to manage real-time data streaming, particularly in the context of an algorithmic trading engine using FastAPI.">
 <meta property='og:url' content='https://assemb.lu/p/understanding-and-utilizing-queues-in-python-for-real-time-data-streaming/'>
 <meta property='og:site_name' content='Assemblu'>
 <meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:published_time' content='2024-08-29T10:38:04&#43;00:00'/><meta property='article:modified_time' content='2024-08-29T10:38:04&#43;00:00'/><meta property='og:image' content='https://assemb.lu/p/understanding-and-utilizing-queues-in-python-for-real-time-data-streaming/cover.jpg' />
 <meta name="twitter:title" content="Understanding and Utilizing Queues in Python for Real-Time Data Streaming">
-<meta name="twitter:description" content="title: &ldquo;Using Queues in Python for Real-Time Data Streaming&rdquo; date: 2024-08-28 draft: false tags: [&ldquo;Python&rdquo;, &ldquo;Queues&rdquo;, &ldquo;Real-Time Data&rdquo;, &ldquo;WebSockets&rdquo;, &ldquo;FastAPI&rdquo;, &ldquo;Algo Trading&rdquo;] In the world of algorithmic trading and real-time data processing, handling a continuous stream of data efficiently is crucial. Python&rsquo;s queue module provides a simple yet powerful way to manage data flow between different threads, ensuring that your application remains responsive and performs well. In this post, we&rsquo;ll explore how to use queue."><meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:description" content="In the world of algorithmic trading and real-time data processing, handling a continuous stream of data efficiently is crucial. Python&rsquo;s queue module provides a simple yet powerful way to manage data flow between different threads, ensuring that your application remains responsive and performs well. In this post, we&rsquo;ll explore how to use queue.Queue in Python to manage real-time data streaming, particularly in the context of an algorithmic trading engine using FastAPI."><meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:image" content='https://assemb.lu/p/understanding-and-utilizing-queues-in-python-for-real-time-data-streaming/cover.jpg' />
     <link rel="shortcut icon" href="/favicon.png" />
 
@@ -235,10 +235,6 @@
         <div class="widget--toc">
             <nav id="TableOfContents">
   <ol>
-    <li><a href="#tags-python-queues-real-time-data-websockets-fastapi-algo-trading">title: &ldquo;Using Queues in Python for Real-Time Data Streaming&rdquo;
-date: 2024-08-28
-draft: false
-tags: [&ldquo;Python&rdquo;, &ldquo;Queues&rdquo;, &ldquo;Real-Time Data&rdquo;, &ldquo;WebSockets&rdquo;, &ldquo;FastAPI&rdquo;, &ldquo;Algo Trading&rdquo;]</a></li>
     <li><a href="#why-use-queues">Why Use Queues?</a></li>
     <li><a href="#example-implementing-a-queue-for-streaming-data">Example: Implementing a Queue for Streaming Data</a>
       <ol>
@@ -332,12 +328,7 @@ tags: [&ldquo;Python&rdquo;, &ldquo;Queues&rdquo;, &ldquo;Real-Time Data&rdquo;,
     <section class="article-content">
     
     
-    <hr>
-<h2 id="tags-python-queues-real-time-data-websockets-fastapi-algo-trading">title: &ldquo;Using Queues in Python for Real-Time Data Streaming&rdquo;
-date: 2024-08-28
-draft: false
-tags: [&ldquo;Python&rdquo;, &ldquo;Queues&rdquo;, &ldquo;Real-Time Data&rdquo;, &ldquo;WebSockets&rdquo;, &ldquo;FastAPI&rdquo;, &ldquo;Algo Trading&rdquo;]
-</h2><p>In the world of algorithmic trading and real-time data processing, handling a continuous stream of data efficiently is crucial. Python&rsquo;s <code>queue</code> module provides a simple yet powerful way to manage data flow between different threads, ensuring that your application remains responsive and performs well. In this post, we&rsquo;ll explore how to use <code>queue.Queue</code> in Python to manage real-time data streaming, particularly in the context of an algorithmic trading engine using FastAPI.</p>
+    <p>In the world of algorithmic trading and real-time data processing, handling a continuous stream of data efficiently is crucial. Python&rsquo;s <code>queue</code> module provides a simple yet powerful way to manage data flow between different threads, ensuring that your application remains responsive and performs well. In this post, we&rsquo;ll explore how to use <code>queue.Queue</code> in Python to manage real-time data streaming, particularly in the context of an algorithmic trading engine using FastAPI.</p>
 <h2 id="why-use-queues">Why Use Queues?
 </h2><p>When dealing with real-time data, especially in applications like trading platforms, you often need to manage data that arrives asynchronously. Queues help in:</p>
 <ul>

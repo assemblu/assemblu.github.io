@@ -12,12 +12,7 @@
         <pubDate>Thu, 29 Aug 2024 10:38:04 +0000</pubDate>
         
         <guid>https://assemb.lu/p/understanding-and-utilizing-queues-in-python-for-real-time-data-streaming/</guid>
-        <description>&lt;img src="https://assemb.lu/p/understanding-and-utilizing-queues-in-python-for-real-time-data-streaming/cover.jpg" alt="Featured image of post Understanding and Utilizing Queues in Python for Real-Time Data Streaming" /&gt;&lt;hr&gt;
-&lt;h2 id=&#34;tags-python-queues-real-time-data-websockets-fastapi-algo-trading&#34;&gt;title: &amp;ldquo;Using Queues in Python for Real-Time Data Streaming&amp;rdquo;
-date: 2024-08-28
-draft: false
-tags: [&amp;ldquo;Python&amp;rdquo;, &amp;ldquo;Queues&amp;rdquo;, &amp;ldquo;Real-Time Data&amp;rdquo;, &amp;ldquo;WebSockets&amp;rdquo;, &amp;ldquo;FastAPI&amp;rdquo;, &amp;ldquo;Algo Trading&amp;rdquo;]
-&lt;/h2&gt;&lt;p&gt;In the world of algorithmic trading and real-time data processing, handling a continuous stream of data efficiently is crucial. Python&amp;rsquo;s &lt;code&gt;queue&lt;/code&gt; module provides a simple yet powerful way to manage data flow between different threads, ensuring that your application remains responsive and performs well. In this post, we&amp;rsquo;ll explore how to use &lt;code&gt;queue.Queue&lt;/code&gt; in Python to manage real-time data streaming, particularly in the context of an algorithmic trading engine using FastAPI.&lt;/p&gt;
+        <description>&lt;img src="https://assemb.lu/p/understanding-and-utilizing-queues-in-python-for-real-time-data-streaming/cover.jpg" alt="Featured image of post Understanding and Utilizing Queues in Python for Real-Time Data Streaming" /&gt;&lt;p&gt;In the world of algorithmic trading and real-time data processing, handling a continuous stream of data efficiently is crucial. Python&amp;rsquo;s &lt;code&gt;queue&lt;/code&gt; module provides a simple yet powerful way to manage data flow between different threads, ensuring that your application remains responsive and performs well. In this post, we&amp;rsquo;ll explore how to use &lt;code&gt;queue.Queue&lt;/code&gt; in Python to manage real-time data streaming, particularly in the context of an algorithmic trading engine using FastAPI.&lt;/p&gt;
 &lt;h2 id=&#34;why-use-queues&#34;&gt;Why Use Queues?
 &lt;/h2&gt;&lt;p&gt;When dealing with real-time data, especially in applications like trading platforms, you often need to manage data that arrives asynchronously. Queues help in:&lt;/p&gt;
 &lt;ul&gt;
