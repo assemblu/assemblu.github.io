@@ -6,18 +6,18 @@ favicon = "/favicon.png"
 
 [footer]
 since = 2020
-customText = ""
+customText = "-"
 
 [dateFormat]
 published = "Jan 02, 2006"
 lastUpdated = "Jan 02, 2006 15:04 MST"
 
 [sidebar]
-emoji = "🍥"
-subtitle = "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+emoji = ""
+subtitle = ""
 
 [sidebar.avatar]
-enabled = true
+enabled = false
 local = true
 src = "img/avatar.png"
 
@@ -76,7 +76,7 @@ enabled = true
 
 ## Comments
 [comments]
-enabled = true
+enabled = false
 provider = "disqus"
 
 [comments.disqusjs]
@@ -148,3 +148,6 @@ clientSecret = ""
 [comments.cusdis]
 host = ""
 id = ""
+
+[params]
+disableHugoCredit = true
