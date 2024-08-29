@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Assemblu</title><link>https://assemb.lu/</link><description>Recent content on Assemblu</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Thu, 29 Aug 2024 10:38:04 +0000</lastBuildDate><atom:link href="https://assemb.lu/index.xml" rel="self" type="application/rss+xml"/><item><title>Understanding and Utilizing Queues in Python for Real-Time Data Streaming</title><link>https://assemb.lu/p/understanding-and-utilizing-queues-in-python-for-real-time-data-streaming/</link><pubDate>Thu, 29 Aug 2024 10:38:04 +0000</pubDate><guid>https://assemb.lu/p/understanding-and-utilizing-queues-in-python-for-real-time-data-streaming/</guid><description>&lt;img src="https://assemb.lu/p/understanding-and-utilizing-queues-in-python-for-real-time-data-streaming/cover.jpg" alt="Featured image of post Understanding and Utilizing Queues in Python for Real-Time Data Streaming" />&lt;p>In the world of algorithmic trading and real-time data processing, handling a continuous stream of data efficiently is crucial. Python&amp;rsquo;s &lt;code>queue&lt;/code> module provides a simple yet powerful way to manage data flow between different threads, ensuring that your application remains responsive and performs well. In this post, we&amp;rsquo;ll explore how to use &lt;code>queue.Queue&lt;/code> in Python to manage real-time data streaming, particularly in the context of an algorithmic trading engine using FastAPI.&lt;/p>
+&lt;h2 id="why-use-queues">Why Use Queues?
+&lt;/h2>&lt;p>When dealing with real-time data, especially in applications like trading platforms, you often need to manage data that arrives asynchronously. Queues help in:&lt;/p>
+&lt;ul>
+&lt;li>&lt;strong>Thread-Safe Communication:&lt;/strong> Queues allow safe exchange of information between threads, ensuring that data isn&amp;rsquo;t corrupted or lost.&lt;/li>
+&lt;li>&lt;strong>Buffering Data:&lt;/strong> They act as a buffer, holding data until your application is ready to process it.&lt;/li>
+&lt;li>&lt;strong>Decoupling Components:&lt;/strong> Queues help separate data production (e.g., from a WebSocket) and data consumption (e.g., updating a chart), allowing each to run independently.&lt;/li>
+&lt;/ul>
+&lt;h2 id="example-implementing-a-queue-for-streaming-data">Example: Implementing a Queue for Streaming Data
+&lt;/h2>&lt;p>Let&amp;rsquo;s consider a scenario where you&amp;rsquo;re building an algo trading engine. You have a WebSocket that receives real-time data from a broker, and you need to update a front-end chart in real-time using FastAPI. Here’s how you can achieve this with a queue.&lt;/p>
+&lt;h3 id="setting-up-the-queue">Setting Up the Queue
+&lt;/h3>&lt;p>First, import the necessary modules and initialize a global queue:&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;span class="lnt">5
+&lt;/span>&lt;span class="lnt">6
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-python" data-lang="python">&lt;span class="line">&lt;span class="cl">&lt;span class="kn">import&lt;/span> &lt;span class="nn">queue&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kn">import&lt;/span> &lt;span class="nn">threading&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kn">import&lt;/span> &lt;span class="nn">asyncio&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kn">from&lt;/span> &lt;span class="nn">fastapi&lt;/span> &lt;span class="kn">import&lt;/span> &lt;span class="n">FastAPI&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="n">WebSocket&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="n">WebSocketDisconnect&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">streamed_data_queue&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="n">queue&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">Queue&lt;/span>&lt;span class="p">()&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h3 id="handling-incoming-data">Handling Incoming Data
+&lt;/h3>&lt;p>Next, we set up a function that processes incoming data and puts it into the queue:&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-python" data-lang="python">&lt;span class="line">&lt;span class="cl">&lt;span class="k">def&lt;/span> &lt;span class="nf">batch_stream&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">data&lt;/span>&lt;span class="p">):&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">data_json&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="s1">&amp;#39;s&amp;#39;&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="n">data&lt;/span>&lt;span class="p">[&lt;/span>&lt;span class="s1">&amp;#39;symbol&amp;#39;&lt;/span>&lt;span class="p">],&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="s1">&amp;#39;t&amp;#39;&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="n">data&lt;/span>&lt;span class="p">[&lt;/span>&lt;span class="s1">&amp;#39;time&amp;#39;&lt;/span>&lt;span class="p">],&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="s1">&amp;#39;ot&amp;#39;&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="n">data&lt;/span>&lt;span class="p">[&lt;/span>&lt;span class="s1">&amp;#39;candles&amp;#39;&lt;/span>&lt;span class="p">][&lt;/span>&lt;span class="mi">0&lt;/span>&lt;span class="p">],&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="s1">&amp;#39;o&amp;#39;&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="n">data&lt;/span>&lt;span class="p">[&lt;/span>&lt;span class="s1">&amp;#39;candles&amp;#39;&lt;/span>&lt;span class="p">][&lt;/span>&lt;span class="mi">1&lt;/span>&lt;span class="p">],&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="s1">&amp;#39;h&amp;#39;&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="n">data&lt;/span>&lt;span class="p">[&lt;/span>&lt;span class="s1">&amp;#39;candles&amp;#39;&lt;/span>&lt;span class="p">][&lt;/span>&lt;span class="mi">3&lt;/span>&lt;span class="p">],&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="s1">&amp;#39;l&amp;#39;&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="n">data&lt;/span>&lt;span class="p">[&lt;/span>&lt;span class="s1">&amp;#39;candles&amp;#39;&lt;/span>&lt;span class="p">][&lt;/span>&lt;span class="mi">4&lt;/span>&lt;span class="p">],&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="s1">&amp;#39;c&amp;#39;&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="n">data&lt;/span>&lt;span class="p">[&lt;/span>&lt;span class="s1">&amp;#39;candles&amp;#39;&lt;/span>&lt;span class="p">][&lt;/span>&lt;span class="mi">2&lt;/span>&lt;span class="p">]&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">streamed_data_queue&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">put&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">data_json&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h3 id="streaming-data-to-the-front-end">Streaming Data to the Front-End
+&lt;/h3>&lt;p>With FastAPI, you can create a WebSocket endpoint that streams the data from the queue to the front-end:&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-python" data-lang="python">&lt;span class="line">&lt;span class="cl">&lt;span class="n">app&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="n">FastAPI&lt;/span>&lt;span class="p">()&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nd">@app.websocket&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s1">&amp;#39;/ws&amp;#39;&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">async&lt;/span> &lt;span class="k">def&lt;/span> &lt;span class="nf">websocket_endpoint&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">websocket&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="n">WebSocket&lt;/span>&lt;span class="p">):&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">await&lt;/span> &lt;span class="n">websocket&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">accept&lt;/span>&lt;span class="p">()&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">while&lt;/span> &lt;span class="kc">True&lt;/span>&lt;span class="p">:&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">try&lt;/span>&lt;span class="p">:&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="ow">not&lt;/span> &lt;span class="n">streamed_data_queue&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">empty&lt;/span>&lt;span class="p">():&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">data&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="n">streamed_data_queue&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">get_nowait&lt;/span>&lt;span class="p">()&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">await&lt;/span> &lt;span class="n">websocket&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">send_json&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">data&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">await&lt;/span> &lt;span class="n">asyncio&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">sleep&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="mf">0.1&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">except&lt;/span> &lt;span class="n">WebSocketDisconnect&lt;/span>&lt;span class="p">:&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">break&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>This WebSocket endpoint continuously checks the queue for new data and sends it to the front-end. The await asyncio.sleep(0.1) call helps prevent the loop from consuming too much CPU.&lt;/p>
+&lt;h3 id="running-the-websocket">Running the WebSocket
+&lt;/h3>&lt;p>Finally, start your WebSocket client to connect and receive data:&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-python" data-lang="python">&lt;span class="line">&lt;span class="cl">&lt;span class="kn">import&lt;/span> &lt;span class="nn">websocket&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kn">import&lt;/span> &lt;span class="nn">json&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">def&lt;/span> &lt;span class="nf">on_message&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">ws&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="n">message&lt;/span>&lt;span class="p">):&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">data&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="n">json&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">loads&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">message&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">batch_stream&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">data&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">ws&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="n">websocket&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">WebSocketApp&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s2">&amp;#34;wss://broker-websocket-url&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">on_message&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="n">on_message&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">ws&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">run_forever&lt;/span>&lt;span class="p">()&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h2 id="conclusion">Conclusion
+&lt;/h2>&lt;p>Using queues in Python for real-time data streaming is a robust solution for managing data flow between threads. In the context of an algo trading engine, queues ensure that your application remains responsive, efficiently handling incoming data and updating your front-end without bottlenecks.&lt;/p>
+&lt;p>By decoupling the data production and consumption processes, queues enable you to build scalable and maintainable systems. Whether you&amp;rsquo;re working on trading platforms, IoT applications, or any real-time data-driven system, understanding and utilizing queues effectively can significantly improve your application&amp;rsquo;s performance and reliability.&lt;/p>
+&lt;p>Happy coding!&lt;/p></description></item><item><title>Archives</title><link>https://assemb.lu/archives/</link><pubDate>Sun, 06 Mar 2022 00:00:00 +0000</pubDate><guid>https://assemb.lu/archives/</guid><description/></item><item><title>Links</title><link>https://assemb.lu/links/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://assemb.lu/links/</guid><description>&lt;p>To use this feature, add &lt;code>links&lt;/code> section to frontmatter.&lt;/p>
+&lt;p>This page&amp;rsquo;s frontmatter:&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;span class="lnt">5
+&lt;/span>&lt;span class="lnt">6
+&lt;/span>&lt;span class="lnt">7
+&lt;/span>&lt;span class="lnt">8
+&lt;/span>&lt;span class="lnt">9
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-yaml" data-lang="yaml">&lt;span class="line">&lt;span class="cl">&lt;span class="nt">links&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>- &lt;span class="nt">title&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="l">GitHub&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">description&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="l">GitHub is the world&amp;#39;s largest software development platform.&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">website&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="l">https://github.com&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">image&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="l">https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>- &lt;span class="nt">title&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="l">TypeScript&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">description&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="l">TypeScript is a typed superset of JavaScript that compiles to plain JavaScript.&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">website&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="l">https://www.typescriptlang.org&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">image&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="l">ts-logo-128.jpg&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>&lt;code>image&lt;/code> field accepts both local and external images.&lt;/p></description></item><item><title>Search</title><link>https://assemb.lu/search/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://assemb.lu/search/</guid><description/></item></channel></rss>
