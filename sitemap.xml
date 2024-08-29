@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+  xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  <url>
+    <loc>https://assemb.lu/</loc>
+    <lastmod>2024-08-29T10:38:04+00:00</lastmod>
+  </url><url>
+    <loc>https://assemb.lu/post/</loc>
+    <lastmod>2024-08-29T10:38:04+00:00</lastmod>
+  </url><url>
+    <loc>https://assemb.lu/p/understanding-and-utilizing-queues-in-python-for-real-time-data-streaming/</loc>
+    <lastmod>2024-08-29T10:38:04+00:00</lastmod>
+  </url><url>
+    <loc>https://assemb.lu/archives/</loc>
+    <lastmod>2022-03-06T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://assemb.lu/page/</loc>
+    <lastmod>2022-03-06T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://assemb.lu/categories/</loc>
+  </url><url>
+    <loc>https://assemb.lu/categories/example-category/</loc>
+  </url><url>
+    <loc>https://assemb.lu/links/</loc>
+  </url><url>
+    <loc>https://assemb.lu/search/</loc>
+  </url><url>
+    <loc>https://assemb.lu/tags/</loc>
+  </url>
+</urlset>
